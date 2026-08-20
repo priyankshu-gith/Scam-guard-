@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+streamlit
+requests
+easyocr
+opencv-python-headless
+numpy
+deep-translator
+gTTS
+pillow
