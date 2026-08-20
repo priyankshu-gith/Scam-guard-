@@ -4,6 +4,12 @@ import io
 import time
 from PIL import Image
 
+# ==============================================================================
+# ⚠️ হ্যাকাথন কনফিগারেশন: আপনার লোকালটানেল (Localtunnel) বা Ngrok লিংকটি এখানে বসাবেন
+# উদাহরণস্বরূপ: "https://localtunnel.me" বা লোকাল টেস্টের জন্য "http://127.0.0.1:8000"
+BACKEND_URL = "http://127.0.0.1:8000" 
+# ==============================================================================
+
 # ১. প্রফেশনাল পেজ সেটআপ ও থিম
 st.set_page_config(page_title="ScamGuard AI - Hybrid Shield", page_icon="🛡️", layout="wide")
 
@@ -73,7 +79,7 @@ st.markdown("""
         clear: both;
     }
     </style>
-""", unsafe_allow_allowed_html=True)
+""", unsafe_allow_html=True) # 🟢 এখানে টাইপো এররটি পুরোপুরি ফিক্স করা হয়েছে
 
 # হেডার সেকশন রেন্ডার
 st.markdown('<p class="main-title">🛡️ SCAMGUARD AI ULTRA HYBRID</p>', unsafe_allow_html=True)
@@ -88,7 +94,7 @@ with col1:
     # ড্রপডাউন মেনু
     language_options = {
         "English": "english", "Bengali (বাংলা)": "bengali", "Hindi (हिंदी)": "hindi",
-        "Marathi (मराठी)": "marathi", "Tamil (தமிழ்)": "tamil", "Telugu (తెలుగు)": "telugu"
+        "Marathi (मরাঠী)": "marathi", "Tamil (தமிழ்)": "tamil", "Telugu (తెలుగు)": "telugu"
     }
     selected_lang_name = st.selectbox("🌐 Select Threat Response Language:", list(language_options.keys()))
     selected_lang_value = language_options[selected_lang_name]
@@ -109,9 +115,6 @@ with col1:
                     
                     files = {"file": ("screenshot.png", img_byte_arr, "image/png")}
                     data = {"selected_language": selected_lang_value}
-                    
-                    # ⚠️ আপনার আসল Localtunnel বা Ngrok ব্যাকএন্ড URL টি এখানে বসাবেন
-                    BACKEND_URL = "http://127.0.0.1:8000" 
                     
                     response = requests.post(f"{BACKEND_URL}/predict", files=files, data=data)
                     
@@ -143,7 +146,6 @@ with col1:
                         audio_url = result_data.get("audio_url")
                         if audio_url:
                             full_audio_url = f"{BACKEND_URL}{audio_url}"
-                            # এই কাস্টম এইচটিএমএল স্ক্রিপ্টটি ব্যাকগ্রাউন্ডে লুকিয়ে থেকে অডিও নিজে থেকেই প্লে করে দেবে
                             st.markdown(f"""
                                 <audio autoplay style="display:none;">
                                     <source src="{full_audio_url}" type="audio/mp3">
@@ -181,12 +183,9 @@ with col2:
     
     if st.button("💬 Send to Bot", use_container_width=True):
         if user_input.strip():
-            # ইউজারের মেসেজ অ্যাড করা
             st.session_state.chat_history.append({"sender": "user", "text": user_input})
             
             try:
-                # ব্যাকএন্ডের চ্যাট এপিআই-তে ডেটা পাঠানো
-                BACKEND_URL = "http://127.0.0.1:8000"
                 chat_response = requests.post(f"{BACKEND_URL}/chat", json={"message": user_input})
                 
                 if chat_response.status_code == 200:
@@ -198,5 +197,4 @@ with col2:
             except Exception:
                 st.session_state.chat_history.append({"sender": "bot", "text": "Chatbot server offline or host failed."})
                 
-            # স্ক্রিন রিফ্রেশ করে নতুন চ্যাট মেসেজ দেখানো
             st.rerun()
